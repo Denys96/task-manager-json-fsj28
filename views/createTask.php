@@ -20,15 +20,15 @@
         <form action="" method="POST">
             <div class="mb-3">
                 <label for="">Id Tarea</label>
-                <input type="number" class="form-control" name="id_task" >
+                <input type="number" class="form-control" name="id_task" required>
             </div>
             <div class="mb-3">
                 <label for="">Titulo</label>
-                <input type="text" class="form-control" name="title">
+                <input type="text" class="form-control" name="title" required>
             </div>
             <div class="mb-3">
                 <label for="">Descripcion</label>
-                <input type="text" class="form-control" name="description">
+                <input type="text" class="form-control" name="description" required>
             </div>
 
             <div class="mb-3">

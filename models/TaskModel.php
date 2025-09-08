@@ -96,4 +96,66 @@ class TaskModel{
         }
     }
 
+public static function changeStatus($id_task){
+    // ✅ Usando __DIR__ para una ruta confiable
+     $file = dirname(__DIR__) . '/data/tasks.json'; // ../data/tasks.json relativo al proyecto
+    
+    if(!file_exists($file)){
+        error_log("Archivo no encontrado: " . $file);
+        return false;
+    }
+
+    $json = file_get_contents($file);
+    $tasks = json_decode($json, true);
+    
+    if(!is_array($tasks)){
+        error_log("Error decodificando JSON o archivo vacío");
+        return false;
+    }
+
+    $found = false;
+    foreach($tasks as &$task){
+        // ✅ Validación más robusta del ID
+        if(isset($task['id_task']) && (int)$task['id_task'] === (int)$id_task){
+            
+            // ✅ Lógica corregida (sin duplicados)
+            $current = mb_strtolower(trim($task['status'] ?? ''));
+            
+            switch($current){
+                case 'pendiente':
+                    $task['status'] = 'en proceso';
+                    break;
+                case 'en proceso':
+                case 'enproceso': // Compatibilidad con typo
+                    $task['status'] = 'completado';
+                    break;
+                case 'completado':
+                    $task['status'] = 'pendiente'; // Ciclo completo
+                    break;
+                default:
+                    $task['status'] = 'pendiente'; // Valor por defecto
+                    break;
+            }
+
+            $found = true;
+            break;
+        }
+    }
+
+    if($found){
+        // ✅ Guardar con manejo de errores
+        $result = file_put_contents(
+            $file, 
+            json_encode($tasks, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        );
+        
+        if($result === false){
+            error_log("Error guardando en el archivo JSON");
+            return false;
+        }
+    }
+
+    return $found;
+}
+
 }
